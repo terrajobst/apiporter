@@ -29,6 +29,7 @@ namespace ApiPorter.Patterns
         public PatternSearch Search { get; }
 
         public Document Document { get; }
+
         public SyntaxNodeOrToken NodeOrToken { get; set; }
 
         public ImmutableArray<PatternCapture> Captures { get; }
