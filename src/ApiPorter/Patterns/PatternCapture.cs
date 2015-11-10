@@ -4,17 +4,17 @@ using Microsoft.CodeAnalysis;
 
 namespace ApiPorter.Patterns
 {
-    internal sealed class Capture
+    public sealed class PatternCapture
     {
-        private Capture(PatternVariable variable, SyntaxNodeOrToken nodeOrToken)
+        private PatternCapture(PatternVariable variable, SyntaxNodeOrToken nodeOrToken)
         {
             Variable = variable;
             NodeOrToken = nodeOrToken;
         }
 
-        public static Capture Create(PatternVariable variable, SyntaxNodeOrToken nodeOrToken)
+        public static PatternCapture Create(PatternVariable variable, SyntaxNodeOrToken nodeOrToken)
         {
-            return new Capture(variable, nodeOrToken);
+            return new PatternCapture(variable, nodeOrToken);
         }
 
         public PatternVariable Variable { get; }

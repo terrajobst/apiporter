@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -7,7 +6,6 @@ using System.Threading.Tasks;
 
 using ApiPorter.Patterns;
 
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 
@@ -58,89 +56,38 @@ namespace ApiPorter
 
             Console.WriteLine("Searching...");
 
-            var patternSearch = CreateSearchers();
-            var documents = solution.Projects.SelectMany(p => p.Documents);
-            var tasks = new List<Task<DocumentResults>>();
+            var searches = CreateSearches();
+            var results = await PatternSearch.RunAsync(solution, searches);
 
-            foreach (var document in documents)
+            foreach (var result in results)
             {
-                var task = Task.Run(() => ProcessDocumentAsync(document, patternSearch));
-                tasks.Add(task);
-            }
+                var text = await result.Document.GetTextAsync();
+                var fileName = result.Document.FilePath;
 
-            await Task.WhenAll(tasks);
+                var syntaxNodeOrToken = result.NodeOrToken;
+                var position = syntaxNodeOrToken.Span.Start;
+                var lineNumber = text.Lines.GetLineFromPosition(position).LineNumber + 1;
 
-            foreach (var results in tasks.Select(t => t.Result))
-            {
-                var text = await results.Document.GetTextAsync();
-                var fileName = results.Document.FilePath;
-                foreach (var match in results.Matches)
-                {
-                    var syntaxNodeOrToken = match.NodeOrToken;
-                    var position = syntaxNodeOrToken.Span.Start;
-                    var lineNumber = text.Lines.GetLineFromPosition(position).LineNumber + 1;
+                var contextNode = syntaxNodeOrToken.Parent
+                    .AncestorsAndSelf()
+                    .First(n => n is StatementSyntax || n is MemberDeclarationSyntax);
 
-                    var contextNode = syntaxNodeOrToken.Parent
-                        .AncestorsAndSelf()
-                        .First(n => n is StatementSyntax || n is MemberDeclarationSyntax);
+                Console.WriteLine(fileName + ":" + lineNumber);
+                Console.WriteLine("\t" + contextNode.ToString().Trim());
 
-                    Console.WriteLine(fileName + ":" + lineNumber);
-                    Console.WriteLine("\t" + contextNode.ToString().Trim());
-
-                    foreach (var capture in match.Captures)
-                        Console.WriteLine("\t{0} = {1}", capture.Variable.Name, capture.NodeOrToken.ToString().Trim());
-                }
+                foreach (var capture in result.Captures)
+                    Console.WriteLine("\t{0} = {1}", capture.Variable.Name, capture.NodeOrToken.ToString().Trim());
             }
         }
 
-        private static async Task<DocumentResults> ProcessDocumentAsync(Document document, ImmutableArray<PatternSearch> searches)
-        {
-            var semanticModel = await document.GetSemanticModelAsync();
-
-            var tasks = new List<Task<ImmutableArray<Match>>>();
-
-            foreach (var search in searches)
-            {
-                var task = Task.Run(() => RunSearchPatternAsync(semanticModel, search));
-                tasks.Add(task);
-            }
-
-            await Task.WhenAll(tasks);
-
-            return new DocumentResults(document, tasks.SelectMany(t => t.Result).ToImmutableArray());
-        }
-
-        private static ImmutableArray<Match> RunSearchPatternAsync(SemanticModel semanticModel, PatternSearch search)
-        {
-            var syntaxTree = semanticModel.SyntaxTree;
-            var matcher = MatcherFactory.Create(semanticModel, search);
-            var matches = MatchRunner.Run(syntaxTree, matcher).ToImmutableArray();
-            return matches;
-        }
-
-        private sealed class DocumentResults
-        {
-            public DocumentResults(Document document, ImmutableArray<Match> matches)
-            {
-                Document = document;
-                Matches = matches;
-            }
-
-            public Document Document { get; }
-
-            public ImmutableArray<Match> Matches { get; }
-        }
-
-        private static ImmutableArray<PatternSearch> CreateSearchers()
+        private static ImmutableArray<PatternSearch> CreateSearches()
         {
             return ImmutableArray.Create(new[]
             {
-                //PatternSearch.Create("DataContext.Empty", Enumerable.Empty<PatternVariable>()),
-
-                //PatternSearch.Create("$type$.Assembly", new[]
-                //{
-                //    PatternVariable.Create("$type$", "System.Type")
-                //}),
+                PatternSearch.Create("$type$.Assembly", new[]
+                {
+                    PatternVariable.Create("$type$", "System.Type")
+                }),
 
                 PatternSearch.Create("$type$.GetProperty($name$, $args$)", new[]
                 {

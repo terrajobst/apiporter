@@ -91,7 +91,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Patterns\Capture.cs" />
+    <Compile Include="Patterns\PatternCapture.cs" />
     <Compile Include="Patterns\ExpressionMatcher.cs" />
     <Compile Include="Patterns\IdentifierMatcher.cs" />
     <Compile Include="Patterns\Match.cs" />
@@ -99,6 +99,8 @@
     <Compile Include="Patterns\MatcherFactory.cs" />
     <Compile Include="Patterns\MatchRunner.cs" />
     <Compile Include="Patterns\PatternReplacement.cs" />
+    <Compile Include="Patterns\PatternSearch.RunAsync.cs" />
+    <Compile Include="Patterns\PatternSearchResult.cs" />
     <Compile Include="Patterns\PatternVariable.cs" />
     <Compile Include="Patterns\SyntaxKindMatcher.cs" />
     <Compile Include="Program.cs" />

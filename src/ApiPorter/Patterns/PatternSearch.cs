@@ -4,7 +4,7 @@ using System.Collections.Immutable;
 
 namespace ApiPorter.Patterns
 {
-    public sealed class PatternSearch
+    public sealed partial class PatternSearch
     {
         private PatternSearch(string text, ImmutableArray<PatternVariable> variables)
         {

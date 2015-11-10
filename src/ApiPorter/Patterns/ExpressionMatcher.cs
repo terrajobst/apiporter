@@ -32,7 +32,7 @@ namespace ApiPorter.Patterns
             if (typeInfo.Type == null || !typeInfo.Type.Equals(_type))
                 return Match.NoMatch;
 
-            var capture = Capture.Create(_variable, nodeOrToken);
+            var capture = PatternCapture.Create(_variable, nodeOrToken);
             return Match.Success.AddCapture(capture);
         }
     }

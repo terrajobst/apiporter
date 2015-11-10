@@ -8,30 +8,30 @@ namespace ApiPorter.Patterns
 {
     internal sealed class Match
     {
-        private Match(SyntaxNodeOrToken nodeOrToken, bool isMatch, ImmutableArray<Capture> captures)
+        private Match(SyntaxNodeOrToken nodeOrToken, bool isMatch, ImmutableArray<PatternCapture> captures)
         {
             NodeOrToken = nodeOrToken;
             IsMatch = isMatch;
             Captures = captures;
         }
 
-        public static readonly Match Success = new Match(default(SyntaxNodeOrToken), true, ImmutableArray<Capture>.Empty);
+        public static readonly Match Success = new Match(default(SyntaxNodeOrToken), true, ImmutableArray<PatternCapture>.Empty);
 
-        public static readonly Match NoMatch = new Match(default(SyntaxNodeOrToken), false, ImmutableArray<Capture>.Empty);
+        public static readonly Match NoMatch = new Match(default(SyntaxNodeOrToken), false, ImmutableArray<PatternCapture>.Empty);
 
         public SyntaxNodeOrToken NodeOrToken { get; set; }
 
         public bool IsMatch { get; }
 
-        public ImmutableArray<Capture> Captures { get; }
+        public ImmutableArray<PatternCapture> Captures { get; }
 
-        public Match AddCapture(Capture capture)
+        public Match AddCapture(PatternCapture patternCapture)
         {
             Debug.Assert(IsMatch);
-            return new Match(NodeOrToken, IsMatch, Captures.Add(capture));
+            return new Match(NodeOrToken, IsMatch, Captures.Add(patternCapture));
         }
 
-        public Match AddCaptures(ImmutableArray<Capture> captures)
+        public Match AddCaptures(ImmutableArray<PatternCapture> captures)
         {
             Debug.Assert(IsMatch);
             return new Match(NodeOrToken, IsMatch, Captures.AddRange(captures));
