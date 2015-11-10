@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace ApiPorter.Patterns
@@ -12,15 +11,24 @@ namespace ApiPorter.Patterns
             Variables = variables;
         }
 
-        public static PatternSearch Create(string text, IEnumerable<PatternVariable> variables)
+        public static PatternSearch Create(string text, ImmutableArray<PatternVariable> variables)
         {
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            if (variables == null)
-                throw new ArgumentNullException(nameof(variables));
-
             return new PatternSearch(text, variables.ToImmutableArray());
+        }
+
+        public static PatternSearch Create(string text, params PatternVariable[] variables)
+        {
+            if (text == null)
+                throw new ArgumentNullException(nameof(text));
+
+            var variableArray = variables == null
+                ? ImmutableArray<PatternVariable>.Empty
+                : variables.ToImmutableArray();
+
+            return Create(text, variableArray);
         }
 
         public string Text { get; }

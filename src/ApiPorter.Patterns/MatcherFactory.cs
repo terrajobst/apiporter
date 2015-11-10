@@ -49,10 +49,14 @@ namespace ApiPorter.Patterns
                     : Create(nodeOrToken.AsNode());
             }
 
-            private static Matcher Create(SyntaxToken token)
+            private Matcher Create(SyntaxToken token)
             {
                 if (token.Kind() != SyntaxKind.IdentifierToken)
                     return new SyntaxKindMatcher(token.Kind(), ImmutableArray<Matcher>.Empty);
+
+                Matcher matcher;
+                if (TryCreateIdentifierPatternMatcher(token, out matcher))
+                    return matcher;
 
                 return new IdentifierMatcher(token.ValueText);
             }
@@ -60,7 +64,11 @@ namespace ApiPorter.Patterns
             private Matcher Create(SyntaxNode node)
             {
                 Matcher matcher;
+
                 if (TryCreateExpressionMatcher(node, out matcher))
+                    return matcher;
+
+                if (TryCreateTypeMatcher(node, out matcher))
                     return matcher;
 
                 var children = node.ChildNodesAndTokens();
@@ -72,6 +80,34 @@ namespace ApiPorter.Patterns
                 }
 
                 return new SyntaxKindMatcher(node.Kind(), childMatchers.ToImmutableArray());
+            }
+
+            private bool TryGetVariable<T>(string name, out T variable)
+                where T: PatternVariable
+            {
+                variable = null;
+
+                PatternVariable result;
+                if (!_variables.TryGetValue(name, out result))
+                    return false;
+
+                variable = result as T;
+                return variable != null;
+            }
+
+            private bool TryCreateIdentifierPatternMatcher(SyntaxToken token, out Matcher matcher)
+            {
+                matcher = null;
+
+                if (token.Kind() != SyntaxKind.IdentifierToken)
+                    return false;
+
+                IdentifierPatternVariable variable;
+                if (!TryGetVariable(token.ValueText, out variable))
+                    return false;
+
+                matcher = new IdentifierRegexMatcher(variable);
+                return true;
             }
 
             private bool TryCreateExpressionMatcher(SyntaxNode node, out Matcher matcher)
@@ -90,18 +126,57 @@ namespace ApiPorter.Patterns
                 if (token.Kind() != SyntaxKind.IdentifierToken)
                     return false;
 
-                PatternVariable variable;
-                if (!_variables.TryGetValue(token.ValueText, out variable))
+                ExpressionPatternVariable variable;
+                if (!TryGetVariable(token.ValueText, out variable))
                     return false;
 
-                var typeSyntax = SyntaxFactory.ParseTypeName(variable.TypeName);
+                ITypeSymbol type;
+                if (!TryParseType(variable.TypeName, out type))
+                    return false;
+
+                matcher = new ExpressionMatcher(variable, _semanticModel, type, variable.AllowDerivedTypes);
+                return true;
+            }
+
+            private bool TryCreateTypeMatcher(SyntaxNode node, out Matcher matcher)
+            {
+                matcher = null;
+
+                var expression = node as TypeSyntax;
+                if (expression == null)
+                    return false;
+
+                var tokens = expression.DescendantTokens().Take(2).ToImmutableArray();
+                if (tokens.Length != 1)
+                    return false;
+
+                var token = tokens[0];
+                if (token.Kind() != SyntaxKind.IdentifierToken)
+                    return false;
+
+                TypePatternVariable variable;
+                if (!TryGetVariable(token.ValueText, out variable))
+                    return false;
+
+                ITypeSymbol type;
+                if (!TryParseType(variable.TypeName, out type))
+                    return false;
+
+                matcher = new TypeMatcher(variable, _semanticModel, type, variable.AllowDerivedTypes);
+                return true;
+            }
+
+            private bool TryParseType(string typeName, out ITypeSymbol type)
+            {
+                type = null;
+                if (string.IsNullOrEmpty(typeName))
+                    return true;
+
+                var typeSyntax = SyntaxFactory.ParseTypeName(typeName);
                 var speculativeTypeInfo = _semanticModel.GetSpeculativeTypeInfo(0, typeSyntax, SpeculativeBindingOption.BindAsTypeOrNamespace);
 
-                if (speculativeTypeInfo.Type == null)
-                    return false;
-
-                matcher = new ExpressionMatcher(variable, _semanticModel, speculativeTypeInfo.Type);
-                return true;
+                type = speculativeTypeInfo.Type;
+                return type != null;
             }
         }
     }

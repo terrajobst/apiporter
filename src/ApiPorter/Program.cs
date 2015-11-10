@@ -84,17 +84,22 @@ namespace ApiPorter
         {
             return ImmutableArray.Create(new[]
             {
-                PatternSearch.Create("$type$.Assembly", new[]
-                {
-                    PatternVariable.Create("$type$", "System.Type")
-                }),
-
-                PatternSearch.Create("$type$.GetProperty($name$, $args$)", new[]
-                {
-                    PatternVariable.Create("$type$", "System.Type"),
-                    PatternVariable.Create("$name$", "System.String"),
-                    PatternVariable.Create("$args$", "System.Type[]")
-                })
+                PatternSearch.Create("$type$.Assembly",
+                    PatternVariable.Expression("$type$", "System.Type")
+                ),
+                PatternSearch.Create("$type$.GetProperty($name$, $args$)",
+                    PatternVariable.Expression("$type$", "System.Type"),
+                    PatternVariable.Expression("$name$", "System.String"),
+                    PatternVariable.Expression("$args$", "System.Type[]")
+                )
+                //PatternSearch.Create("Expression<$type$>.$identifier$",
+                //    PatternVariable.Type("$type$"),
+                //    PatternVariable.Identifier("$identifier$")
+                //)                
+                // ,
+                // PatternSearch.Create("$identifier$.Text",
+                //    PatternVariable.Identifier("$identifier$", "query|syntaxTree", true)
+                //)
             });
         }
     }

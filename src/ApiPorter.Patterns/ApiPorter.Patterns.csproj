@@ -91,7 +91,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExpressionMatcher.cs" />
+    <Compile Include="ExpressionPatternVariable.cs" />
+    <Compile Include="ExpressionMatcher`1.cs" />
     <Compile Include="IdentifierMatcher.cs" />
+    <Compile Include="IdentifierPatternVariable.cs" />
+    <Compile Include="IdentifierRegexMatcher.cs" />
     <Compile Include="Match.cs" />
     <Compile Include="Matcher.cs" />
     <Compile Include="MatcherFactory.cs" />
@@ -101,9 +105,13 @@
     <Compile Include="PatternSearch.cs" />
     <Compile Include="PatternSearch.RunAsync.cs" />
     <Compile Include="PatternSearchResult.cs" />
+    <Compile Include="PatternVariable.Factories.cs" />
     <Compile Include="PatternVariable.cs" />
+    <Compile Include="PatternVariableKind.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SyntaxKindMatcher.cs" />
+    <Compile Include="TypeMatcher.cs" />
+    <Compile Include="TypePatternVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -25,6 +25,12 @@ namespace ApiPorter.Patterns
 
         public ImmutableArray<PatternCapture> Captures { get; }
 
+        public Match AddCapture(PatternVariable variable, SyntaxNodeOrToken nodeOrToken)
+        {
+            var capture = PatternCapture.Create(variable, nodeOrToken);
+            return AddCapture(capture);
+        }
+
         public Match AddCapture(PatternCapture patternCapture)
         {
             Debug.Assert(IsMatch);
