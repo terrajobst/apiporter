@@ -44,10 +44,16 @@ namespace ApiPorter.Patterns
             return new TypeVariable(name, typeName, allowDerivedTypes);
         }
 
-        public static ArgumentVariable Argument(string name, int minOccurrences = 1, int? maxOccurrences = null)
+        public static ArgumentVariable Argument(string name, int minOccurrences = 0, int? maxOccurrences = null)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
+
+            if (minOccurrences < 0)
+                throw new ArgumentOutOfRangeException(nameof(minOccurrences));
+
+            if (maxOccurrences <= 0)
+                throw new ArgumentOutOfRangeException(nameof(maxOccurrences));
 
             return new ArgumentVariable(name, minOccurrences, maxOccurrences);
         }

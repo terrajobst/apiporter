@@ -51,6 +51,9 @@ namespace ApiPorter.Patterns
                 if (TryCreateArgumentMatcher(node, out matcher))
                     return matcher;
 
+                if (TryCreateEmptyArgumentListMatcher(node, out matcher))
+                    return matcher;
+
                 if (TryCreateExpressionMatcher(node, out matcher))
                     return matcher;
 
@@ -113,6 +116,28 @@ namespace ApiPorter.Patterns
                 var following = argumentList.Arguments.Count - index - 1;
 
                 matcher = new ArgumentMatcher(variable, following);
+                return true;
+            }
+
+            private bool TryCreateEmptyArgumentListMatcher(SyntaxNode node, out Matcher matcher)
+            {
+                matcher = null;
+
+                var argumentList = node as ArgumentListSyntax;
+                if (argumentList == null)
+                    return false;
+
+                if (argumentList.Arguments.Count != 1)
+                    return false;
+
+                ArgumentVariable variable;
+                if (!TryGetVariable(argumentList.Arguments[0].Expression, out variable))
+                    return false;
+
+                if (variable.MinOccurrences != 0)
+                    return false;
+
+                matcher = new EmptyArgumentListMatcher();
                 return true;
             }
 

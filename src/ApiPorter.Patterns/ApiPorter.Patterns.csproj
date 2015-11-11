@@ -92,6 +92,7 @@
   <ItemGroup>
     <Compile Include="ArgumentMatcher.cs" />
     <Compile Include="ArgumentVariable.cs" />
+    <Compile Include="EmptyArgumentListMatcher.cs" />
     <Compile Include="ExpressionMatcher.cs" />
     <Compile Include="ExpressionVariable.cs" />
     <Compile Include="ExpressionMatcher`1.cs" />
