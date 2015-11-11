@@ -6,6 +6,7 @@ namespace ApiPorter.Patterns
     {
         Expression,
         Identifier,
-        Type
+        Type,
+        Argument
     }
 }

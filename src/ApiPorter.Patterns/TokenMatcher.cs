@@ -5,18 +5,20 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace ApiPorter.Patterns
 {
-    internal sealed class IdentifierMatcher : Matcher
+    internal sealed class TokenMatcher : Matcher
     {
+        private readonly SyntaxKind _kind;
         private readonly string _text;
 
-        public IdentifierMatcher(string text)
+        public TokenMatcher(SyntaxKind kind, string text)
         {
+            _kind = kind;
             _text = text;
         }
 
         public override Match Execute(SyntaxNodeOrToken nodeOrToken)
         {
-            if (!nodeOrToken.IsToken || nodeOrToken.Kind() != SyntaxKind.IdentifierToken)
+            if (nodeOrToken.Kind() != _kind)
                 return Match.NoMatch;
 
             return nodeOrToken.AsToken().ValueText == _text ? Match.Success : Match.NoMatch;

@@ -51,19 +51,19 @@ namespace ApiPorter.Patterns
 
             private Matcher Create(SyntaxToken token)
             {
-                if (token.Kind() != SyntaxKind.IdentifierToken)
-                    return new SyntaxKindMatcher(token.Kind(), ImmutableArray<Matcher>.Empty);
-
                 Matcher matcher;
                 if (TryCreateIdentifierPatternMatcher(token, out matcher))
                     return matcher;
 
-                return new IdentifierMatcher(token.ValueText);
+                return new TokenMatcher(token.Kind(), token.ValueText);
             }
 
             private Matcher Create(SyntaxNode node)
             {
                 Matcher matcher;
+
+                if (TryCreateArgumentMatcher(node, out matcher))
+                    return matcher;
 
                 if (TryCreateExpressionMatcher(node, out matcher))
                     return matcher;
@@ -80,6 +80,23 @@ namespace ApiPorter.Patterns
                 }
 
                 return new SyntaxKindMatcher(node.Kind(), childMatchers.ToImmutableArray());
+            }
+
+            private bool TryGetVariable<T>(SyntaxNode node, out T variable)
+                where T : PatternVariable
+            {
+                variable = null;
+
+                var tokens = node.DescendantTokens().Take(2).ToImmutableArray();
+                if (tokens.Length != 1)
+                    return false;
+
+                var token = tokens[0];
+                if (token.Kind() != SyntaxKind.IdentifierToken)
+                    return false;
+
+                var variableName = token.ValueText;
+                return TryGetVariable(variableName, out variable);
             }
 
             private bool TryGetVariable<T>(string name, out T variable)
@@ -110,6 +127,29 @@ namespace ApiPorter.Patterns
                 return true;
             }
 
+            private bool TryCreateArgumentMatcher(SyntaxNode node, out Matcher matcher)
+            {
+                matcher = null;
+
+                var argument = node as ArgumentSyntax;
+                if (argument == null)
+                    return false;
+
+                ArgumentPatternVariable variable;
+                if (!TryGetVariable(argument.Expression, out variable))
+                    return false;
+
+                var argumentList = node.Parent as ArgumentListSyntax;
+                if (argumentList == null)
+                    return false;
+
+                var index = argumentList.Arguments.IndexOf(argument);
+                var following = argumentList.Arguments.Count - index - 1;
+
+                matcher = new ArgumentMatcher(variable, following);
+                return true;
+            }
+
             private bool TryCreateExpressionMatcher(SyntaxNode node, out Matcher matcher)
             {
                 matcher = null;
@@ -118,16 +158,8 @@ namespace ApiPorter.Patterns
                 if (expression == null)
                     return false;
 
-                var tokens = expression.DescendantTokens().Take(2).ToImmutableArray();
-                if (tokens.Length != 1)
-                    return false;
-
-                var token = tokens[0];
-                if (token.Kind() != SyntaxKind.IdentifierToken)
-                    return false;
-
                 ExpressionPatternVariable variable;
-                if (!TryGetVariable(token.ValueText, out variable))
+                if (!TryGetVariable(expression, out variable))
                     return false;
 
                 ITypeSymbol type;
@@ -146,16 +178,8 @@ namespace ApiPorter.Patterns
                 if (expression == null)
                     return false;
 
-                var tokens = expression.DescendantTokens().Take(2).ToImmutableArray();
-                if (tokens.Length != 1)
-                    return false;
-
-                var token = tokens[0];
-                if (token.Kind() != SyntaxKind.IdentifierToken)
-                    return false;
-
                 TypePatternVariable variable;
-                if (!TryGetVariable(token.ValueText, out variable))
+                if (!TryGetVariable(expression, out variable))
                     return false;
 
                 ITypeSymbol type;

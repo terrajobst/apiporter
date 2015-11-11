@@ -90,10 +90,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArgumentMatcher.cs" />
+    <Compile Include="ArgumentPatternVariable.cs" />
     <Compile Include="ExpressionMatcher.cs" />
     <Compile Include="ExpressionPatternVariable.cs" />
     <Compile Include="ExpressionMatcher`1.cs" />
-    <Compile Include="IdentifierMatcher.cs" />
+    <Compile Include="TokenMatcher.cs" />
     <Compile Include="IdentifierPatternVariable.cs" />
     <Compile Include="IdentifierRegexMatcher.cs" />
     <Compile Include="Match.cs" />

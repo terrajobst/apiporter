@@ -31,6 +31,12 @@ namespace ApiPorter.Patterns
             return AddCapture(capture);
         }
 
+        public Match AddCapture(PatternVariable variable, SyntaxNodeOrToken startNodeOrToken, SyntaxNodeOrToken endNodeOrToken)
+        {
+            var capture = PatternCapture.Create(variable, startNodeOrToken, endNodeOrToken);
+            return AddCapture(capture);
+        }
+
         public Match AddCapture(PatternCapture patternCapture)
         {
             Debug.Assert(IsMatch);
@@ -43,10 +49,10 @@ namespace ApiPorter.Patterns
             return new Match(NodeOrToken, IsMatch, Captures.AddRange(captures));
         }
 
-        public Match WithSyntaxNodeOrToken(SyntaxNodeOrToken syntaxNodeOrToken)
+        public Match WithSyntaxNodeOrToken(SyntaxNodeOrToken nodeOrToken)
         {
             Debug.Assert(IsMatch);
-            return new Match(syntaxNodeOrToken, IsMatch, Captures);
+            return new Match(nodeOrToken, IsMatch, Captures);
         }
     }
 }

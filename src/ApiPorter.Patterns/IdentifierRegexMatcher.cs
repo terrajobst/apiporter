@@ -17,7 +17,7 @@ namespace ApiPorter.Patterns
 
         public override Match Execute(SyntaxNodeOrToken nodeOrToken)
         {
-            if (!nodeOrToken.IsToken || nodeOrToken.Kind() != SyntaxKind.IdentifierToken)
+            if (nodeOrToken.Kind() != SyntaxKind.IdentifierToken)
                 return Match.NoMatch;
 
             var identifier = nodeOrToken.AsToken().ValueText;

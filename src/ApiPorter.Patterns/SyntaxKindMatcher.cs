@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Linq;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -28,16 +29,34 @@ namespace ApiPorter.Patterns
             {
                 var node = nodeOrToken.AsNode();
                 var children = node.ChildNodesAndTokens();
-                if (children.Count != _childMatchers.Length)
-                    return Match.NoMatch;
+
+                var matcherIndex = 0;
+                var matchedEnd = 0;
 
                 for (var i = 0; i < children.Count; i++)
                 {
-                    var match = _childMatchers[i].Execute(children[i]);
+                    if (matcherIndex >= _childMatchers.Length)
+                        return Match.NoMatch;
+
+                    while (i < children.Count && children[i].Span.Start < matchedEnd)
+                        i++;
+
+                    if (i >= children.Count)
+                        break;
+
+                    var child = children[i];
+                    var matcher = _childMatchers[matcherIndex];
+                    var match = matcher.Execute(child);
                     if (!match.IsMatch)
                         return Match.NoMatch;
 
+                    // Depending on much was captured, we need to skip some matchers.
+
+                    if (match.Captures.Any())
+                        matchedEnd = match.Captures.Max(c => c.EndNodeOrToken.Span.End);
+
                     result = result.AddCaptures(match.Captures);
+                    matcherIndex++;
                 }
             }
 

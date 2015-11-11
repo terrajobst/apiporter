@@ -8,6 +8,7 @@ using ApiPorter.Patterns;
 
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
+using Microsoft.CodeAnalysis.Text;
 
 namespace ApiPorter
 {
@@ -76,14 +77,24 @@ namespace ApiPorter
                 Console.WriteLine("\t" + contextNode.ToString().Trim());
 
                 foreach (var capture in result.Captures)
-                    Console.WriteLine("\t{0} = {1}", capture.Variable.Name, capture.NodeOrToken.ToString().Trim());
+                {
+                    var start = capture.StartNodeOrToken.Span.Start;
+                    var end = capture.EndNodeOrToken.Span.End;
+                    var span = TextSpan.FromBounds(start, end);
+                    var s = text.ToString(span);
+                    Console.WriteLine("\t{0} = {1}", capture.Variable.Name, s);
+                }
             }
         }
 
         private static ImmutableArray<PatternSearch> CreateSearches()
         {
-            return ImmutableArray.Create(new[]
-            {
+            return ImmutableArray.Create(
+                PatternSearch.Create("$type$.Create($args$, syntaxTree)",
+                    PatternVariable.Expression("$type$"),
+                    PatternVariable.Identifier("$identifier$"),
+                    PatternVariable.Argument("$args$")
+                ),
                 PatternSearch.Create("$type$.Assembly",
                     PatternVariable.Expression("$type$", "System.Type")
                 ),
@@ -91,16 +102,15 @@ namespace ApiPorter
                     PatternVariable.Expression("$type$", "System.Type"),
                     PatternVariable.Expression("$name$", "System.String"),
                     PatternVariable.Expression("$args$", "System.Type[]")
+                ),
+                PatternSearch.Create("Expression<$type$>.$identifier$",
+                    PatternVariable.Type("$type$"),
+                    PatternVariable.Identifier("$identifier$")
+                ),
+                PatternSearch.Create("$identifier$.Text",
+                    PatternVariable.Identifier("$identifier$", "query|syntaxTree", true)
                 )
-                //PatternSearch.Create("Expression<$type$>.$identifier$",
-                //    PatternVariable.Type("$type$"),
-                //    PatternVariable.Identifier("$identifier$")
-                //)                
-                // ,
-                // PatternSearch.Create("$identifier$.Text",
-                //    PatternVariable.Identifier("$identifier$", "query|syntaxTree", true)
-                //)
-            });
+            );
         }
     }
 }

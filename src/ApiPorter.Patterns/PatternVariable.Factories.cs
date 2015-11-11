@@ -3,7 +3,6 @@ using System.Text.RegularExpressions;
 
 namespace ApiPorter.Patterns
 {
-    // Argument (optional limit, n...m args)
     // Statement (optional limit n...m statements)
     // MemberAccess
 
@@ -43,6 +42,14 @@ namespace ApiPorter.Patterns
                 throw new ArgumentNullException(nameof(name));
 
             return new TypePatternVariable(name, typeName, allowDerivedTypes);
+        }
+
+        public static ArgumentPatternVariable Argument(string name, int minOccurrences = 1, int? maxOccurrences = null)
+        {
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
+            return new ArgumentPatternVariable(name, minOccurrences, maxOccurrences);
         }
     }
 }
