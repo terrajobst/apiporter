@@ -98,10 +98,9 @@ namespace ApiPorter
                 PatternSearch.Create("$type$.Assembly",
                     PatternVariable.Expression("$type$", "System.Type")
                 ),
-                PatternSearch.Create("$type$.GetProperty($name$, $args$)",
+                PatternSearch.Create("$type$.GetProperty($args$)",
                     PatternVariable.Expression("$type$", "System.Type"),
-                    PatternVariable.Expression("$name$", "System.String"),
-                    PatternVariable.Expression("$args$", "System.Type[]")
+                    PatternVariable.Argument("$args$")
                 ),
                 PatternSearch.Create("Expression<$type$>.$identifier$",
                     PatternVariable.Type("$type$"),
