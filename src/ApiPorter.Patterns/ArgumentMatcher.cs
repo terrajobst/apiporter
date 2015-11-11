@@ -32,6 +32,9 @@ namespace ApiPorter.Patterns
 
             var currentIndex = argumentList.Arguments.IndexOf(argument);
             var availableCount = argumentList.Arguments.Count - currentIndex - _following;
+            if (availableCount == 0)
+                return Match.NoMatch;
+
             var captureCount = _variable.MaxOccurrences == null
                 ? availableCount
                 : Math.Min(availableCount, _variable.MaxOccurrences.Value);
