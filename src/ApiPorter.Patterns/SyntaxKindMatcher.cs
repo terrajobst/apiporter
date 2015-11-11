@@ -58,6 +58,10 @@ namespace ApiPorter.Patterns
                     result = result.AddCaptures(match.Captures);
                     matcherIndex++;
                 }
+
+                var allMatchersUsed = matcherIndex >= _childMatchers.Length;
+                if (!allMatchersUsed)
+                    return Match.NoMatch;
             }
 
             return result;
