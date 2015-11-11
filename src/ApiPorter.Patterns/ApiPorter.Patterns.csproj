@@ -95,6 +95,7 @@
     <Compile Include="ExpressionMatcher.cs" />
     <Compile Include="ExpressionVariable.cs" />
     <Compile Include="ExpressionMatcher`1.cs" />
+    <Compile Include="Pattern.cs" />
     <Compile Include="TokenMatcher.cs" />
     <Compile Include="IdentifierVariable.cs" />
     <Compile Include="IdentifierRegexMatcher.cs" />

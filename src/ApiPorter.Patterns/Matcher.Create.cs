@@ -14,32 +14,20 @@ namespace ApiPorter.Patterns
     {
         public static Matcher Create(SemanticModel semanticModel, PatternSearch search)
         {
-            var textBuilder = new StringBuilder(search.Text);
-            var variableMap = new Dictionary<string, PatternVariable>();
-
-            foreach (var patternVariable in search.Variables)
-            {
-                var fakeIdentifier = "__" + Guid.NewGuid().ToString("N");
-                textBuilder.Replace(patternVariable.Name, fakeIdentifier);
-                variableMap.Add(fakeIdentifier, patternVariable);
-            }
-            
-            // TODO: For now we only support expressions
-            var expression = SyntaxFactory.ParseExpression(textBuilder.ToString());
-            var builder = new MatcherBuilder(semanticModel, variableMap);
-            var matcher = builder.Create(expression);
-            return matcher;
+            var pattern = Pattern.Create(search.Text, search.Variables);
+            var builder = new MatcherBuilder(semanticModel, pattern);
+            return builder.Create(pattern.Node);
         }
 
         private sealed class MatcherBuilder
         {
             private readonly SemanticModel _semanticModel;
-            private readonly Dictionary<string, PatternVariable> _variables;
+            private readonly Pattern _pattern;
 
-            public MatcherBuilder(SemanticModel semanticModel, Dictionary<string, PatternVariable> variables)
+            public MatcherBuilder(SemanticModel semanticModel, Pattern pattern)
             {
                 _semanticModel = semanticModel;
-                _variables = variables;
+                _pattern = pattern;
             }
 
             public Matcher Create(SyntaxNodeOrToken nodeOrToken)
@@ -82,33 +70,16 @@ namespace ApiPorter.Patterns
                 return new SyntaxKindMatcher(node.Kind(), childMatchers.ToImmutableArray());
             }
 
-            private bool TryGetVariable<T>(SyntaxNode node, out T variable)
+            private bool TryGetVariable<T>(SyntaxNodeOrToken nodeOrToken, out T variable)
                 where T : PatternVariable
             {
                 variable = null;
 
-                var tokens = node.DescendantTokens().Take(2).ToImmutableArray();
-                if (tokens.Length != 1)
+                PatternVariable patternVariable;
+                if (!_pattern.TryGetVariable(nodeOrToken, out patternVariable))
                     return false;
 
-                var token = tokens[0];
-                if (token.Kind() != SyntaxKind.IdentifierToken)
-                    return false;
-
-                var variableName = token.ValueText;
-                return TryGetVariable(variableName, out variable);
-            }
-
-            private bool TryGetVariable<T>(string name, out T variable)
-                where T: PatternVariable
-            {
-                variable = null;
-
-                PatternVariable result;
-                if (!_variables.TryGetValue(name, out result))
-                    return false;
-
-                variable = result as T;
+                variable = patternVariable as T;
                 return variable != null;
             }
 
@@ -116,11 +87,8 @@ namespace ApiPorter.Patterns
             {
                 matcher = null;
 
-                if (token.Kind() != SyntaxKind.IdentifierToken)
-                    return false;
-
                 IdentifierVariable variable;
-                if (!TryGetVariable(token.ValueText, out variable))
+                if (!TryGetVariable(token, out variable))
                     return false;
 
                 matcher = new IdentifierRegexMatcher(variable);
