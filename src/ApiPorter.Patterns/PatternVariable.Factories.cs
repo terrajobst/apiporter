@@ -8,15 +8,15 @@ namespace ApiPorter.Patterns
 
     partial class PatternVariable
     {
-        public static ExpressionPatternVariable Expression(string name, string typeName = null, bool allowDerivedTypes = true)
+        public static ExpressionVariable Expression(string name, string typeName = null, bool allowDerivedTypes = true)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            return new ExpressionPatternVariable(name, typeName, allowDerivedTypes);
+            return new ExpressionVariable(name, typeName, allowDerivedTypes);
         }
 
-        public static IdentifierPatternVariable Identifier(string name, string regex = null, bool caseSensitive = false)
+        public static IdentifierVariable Identifier(string name, string regex = null, bool caseSensitive = false)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
@@ -33,23 +33,23 @@ namespace ApiPorter.Patterns
                 }
             }
 
-            return new IdentifierPatternVariable(name, regex, caseSensitive);
+            return new IdentifierVariable(name, regex, caseSensitive);
         }
 
-        public static TypePatternVariable Type(string name, string typeName = null, bool allowDerivedTypes = true)
+        public static TypeVariable Type(string name, string typeName = null, bool allowDerivedTypes = true)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            return new TypePatternVariable(name, typeName, allowDerivedTypes);
+            return new TypeVariable(name, typeName, allowDerivedTypes);
         }
 
-        public static ArgumentPatternVariable Argument(string name, int minOccurrences = 1, int? maxOccurrences = null)
+        public static ArgumentVariable Argument(string name, int minOccurrences = 1, int? maxOccurrences = null)
         {
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            return new ArgumentPatternVariable(name, minOccurrences, maxOccurrences);
+            return new ArgumentVariable(name, minOccurrences, maxOccurrences);
         }
     }
 }

@@ -2,9 +2,9 @@ using System;
 
 namespace ApiPorter.Patterns
 {
-    public sealed class IdentifierPatternVariable : PatternVariable
+    public sealed class IdentifierVariable : PatternVariable
     {
-        internal IdentifierPatternVariable(string name, string regex, bool caseSensitive)
+        internal IdentifierVariable(string name, string regex, bool caseSensitive)
             : base(name)
         {
             Regex = regex;

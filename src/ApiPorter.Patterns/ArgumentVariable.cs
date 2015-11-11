@@ -2,9 +2,9 @@ using System;
 
 namespace ApiPorter.Patterns
 {
-    public sealed class ArgumentPatternVariable : PatternVariable
+    public sealed class ArgumentVariable : PatternVariable
     {
-        internal ArgumentPatternVariable(string name, int minOccurrences, int? maxOccurrences)
+        internal ArgumentVariable(string name, int minOccurrences, int? maxOccurrences)
             : base(name)
         {
             MinOccurrences = minOccurrences;

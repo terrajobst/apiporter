@@ -8,9 +8,9 @@ namespace ApiPorter.Patterns
 {
     internal sealed class IdentifierRegexMatcher : Matcher
     {
-        private readonly IdentifierPatternVariable _variable;
+        private readonly IdentifierVariable _variable;
 
-        public IdentifierRegexMatcher(IdentifierPatternVariable variable)
+        public IdentifierRegexMatcher(IdentifierVariable variable)
         {
             _variable = variable;
         }

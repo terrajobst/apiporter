@@ -119,7 +119,7 @@ namespace ApiPorter.Patterns
                 if (token.Kind() != SyntaxKind.IdentifierToken)
                     return false;
 
-                IdentifierPatternVariable variable;
+                IdentifierVariable variable;
                 if (!TryGetVariable(token.ValueText, out variable))
                     return false;
 
@@ -135,7 +135,7 @@ namespace ApiPorter.Patterns
                 if (argument == null)
                     return false;
 
-                ArgumentPatternVariable variable;
+                ArgumentVariable variable;
                 if (!TryGetVariable(argument.Expression, out variable))
                     return false;
 
@@ -158,7 +158,7 @@ namespace ApiPorter.Patterns
                 if (expression == null)
                     return false;
 
-                ExpressionPatternVariable variable;
+                ExpressionVariable variable;
                 if (!TryGetVariable(expression, out variable))
                     return false;
 
@@ -178,7 +178,7 @@ namespace ApiPorter.Patterns
                 if (expression == null)
                     return false;
 
-                TypePatternVariable variable;
+                TypeVariable variable;
                 if (!TryGetVariable(expression, out variable))
                     return false;
 

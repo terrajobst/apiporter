@@ -8,10 +8,10 @@ namespace ApiPorter.Patterns
 {
     internal sealed class ArgumentMatcher : Matcher
     {
-        private readonly ArgumentPatternVariable _variable;
+        private readonly ArgumentVariable _variable;
         private readonly int _following;
 
-        public ArgumentMatcher(ArgumentPatternVariable variable, int following)
+        public ArgumentMatcher(ArgumentVariable variable, int following)
         {
             _variable = variable;
             _following = following;
