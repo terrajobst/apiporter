@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace ApiPorter.Patterns
 {
-    internal static class MatcherFactory
+    partial class Matcher
     {
         public static Matcher Create(SemanticModel semanticModel, PatternSearch search)
         {

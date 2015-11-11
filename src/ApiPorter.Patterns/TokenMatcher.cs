@@ -16,7 +16,7 @@ namespace ApiPorter.Patterns
             _text = text;
         }
 
-        public override Match Execute(SyntaxNodeOrToken nodeOrToken)
+        public override Match Run(SyntaxNodeOrToken nodeOrToken)
         {
             if (nodeOrToken.Kind() != _kind)
                 return Match.NoMatch;

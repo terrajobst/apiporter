@@ -77,8 +77,8 @@ namespace ApiPorter.Patterns
         private static ImmutableArray<PatternSearchResult> RunAsync(Document document, SemanticModel semanticModel, PatternSearch search)
         {
             var syntaxTree = semanticModel.SyntaxTree;
-            var matcher = MatcherFactory.Create(semanticModel, search);
-            var matches = MatchRunner.Run(syntaxTree, matcher);
+            var matcher = Matcher.Create(semanticModel, search);
+            var matches = matcher.Run(syntaxTree);
             var results = matches.Select(m => PatternSearchResult.Create(search, document, m.NodeOrToken, m.Captures));
             return results.ToImmutableArray();
         }

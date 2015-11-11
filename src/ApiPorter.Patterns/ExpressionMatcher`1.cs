@@ -22,7 +22,7 @@ namespace ApiPorter.Patterns
             _allowDerivedTypes = allowDerivedTypes;
         }
 
-        public override Match Execute(SyntaxNodeOrToken nodeOrToken)
+        public override Match Run(SyntaxNodeOrToken nodeOrToken)
         {
             if (!nodeOrToken.IsNode)
                 return Match.NoMatch;

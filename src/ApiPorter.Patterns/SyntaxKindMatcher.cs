@@ -18,7 +18,7 @@ namespace ApiPorter.Patterns
             _childMatchers = childMatchers;
         }
 
-        public override Match Execute(SyntaxNodeOrToken nodeOrToken)
+        public override Match Run(SyntaxNodeOrToken nodeOrToken)
         {
             if (nodeOrToken.Kind() != _syntaxKind)
                 return Match.NoMatch;
@@ -46,7 +46,7 @@ namespace ApiPorter.Patterns
 
                     var child = children[i];
                     var matcher = _childMatchers[matcherIndex];
-                    var match = matcher.Execute(child);
+                    var match = matcher.Run(child);
                     if (!match.IsMatch)
                         return Match.NoMatch;
 

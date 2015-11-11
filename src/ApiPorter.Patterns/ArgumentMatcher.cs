@@ -17,7 +17,7 @@ namespace ApiPorter.Patterns
             _following = following;
         }
 
-        public override Match Execute(SyntaxNodeOrToken nodeOrToken)
+        public override Match Run(SyntaxNodeOrToken nodeOrToken)
         {
             if (nodeOrToken.Kind() != SyntaxKind.Argument)
                 return Match.NoMatch;

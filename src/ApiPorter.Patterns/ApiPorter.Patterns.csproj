@@ -100,8 +100,8 @@
     <Compile Include="IdentifierRegexMatcher.cs" />
     <Compile Include="Match.cs" />
     <Compile Include="Matcher.cs" />
-    <Compile Include="MatcherFactory.cs" />
-    <Compile Include="MatchRunner.cs" />
+    <Compile Include="Matcher.Create.cs" />
+    <Compile Include="Matcher.Run.cs" />
     <Compile Include="PatternCapture.cs" />
     <Compile Include="PatternReplacement.cs" />
     <Compile Include="PatternSearch.cs" />

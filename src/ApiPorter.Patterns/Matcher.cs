@@ -4,8 +4,8 @@ using Microsoft.CodeAnalysis;
 
 namespace ApiPorter.Patterns
 {
-    internal abstract class Matcher
+    internal abstract partial class Matcher
     {
-        public abstract Match Execute(SyntaxNodeOrToken nodeOrToken);
+        public abstract Match Run(SyntaxNodeOrToken nodeOrToken);
     }
 }
