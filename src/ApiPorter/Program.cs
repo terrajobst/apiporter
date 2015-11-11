@@ -65,16 +65,32 @@ namespace ApiPorter
                 var text = await result.Document.GetTextAsync();
                 var fileName = result.Document.FilePath;
 
-                var syntaxNodeOrToken = result.NodeOrToken;
-                var position = syntaxNodeOrToken.Span.Start;
+                var nodeOrToken = result.NodeOrToken;
+                var position = nodeOrToken.Span.Start;
                 var lineNumber = text.Lines.GetLineFromPosition(position).LineNumber + 1;
 
-                var contextNode = syntaxNodeOrToken.Parent
+                var contextNode = nodeOrToken.Parent
                     .AncestorsAndSelf()
                     .First(n => n is StatementSyntax || n is MemberDeclarationSyntax);
 
                 Console.WriteLine(fileName + ":" + lineNumber);
-                Console.WriteLine("\t" + contextNode.ToString().Trim());
+
+                var nodeSpan = contextNode.Span;
+                var matchSpan = nodeOrToken.Span;
+                var prefixSpan = TextSpan.FromBounds(nodeSpan.Start, matchSpan.Start);
+                var suffixSpan = TextSpan.FromBounds(matchSpan.End, nodeSpan.End);
+                var prefixText = text.ToString(prefixSpan);
+                var matchText = text.ToString(matchSpan);
+                var suffixText = text.ToString(suffixSpan);
+
+                Console.Write("\t");
+                Console.Write(prefixText);
+                var old = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write(matchText);
+                Console.ForegroundColor = old;
+                Console.Write(suffixText);
+                Console.WriteLine();
 
                 foreach (var capture in result.Captures)
                 {
