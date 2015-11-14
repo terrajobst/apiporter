@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Microsoft.CodeAnalysis;
 
@@ -20,6 +21,9 @@ namespace ApiPorter.Patterns
 
         public static PatternCapture Create(PatternVariable variable, SyntaxNodeOrToken startNodeOrToken, SyntaxNodeOrToken endNodeOrToken)
         {
+            Debug.Assert(endNodeOrToken.Parent != startNodeOrToken.Parent,
+                         $"{nameof(endNodeOrToken)}.{nameof(endNodeOrToken.Parent)} must match {nameof(startNodeOrToken)}", nameof(endNodeOrToken));
+
             return new PatternCapture(variable, startNodeOrToken, endNodeOrToken);
         }
 
