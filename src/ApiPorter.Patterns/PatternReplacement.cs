@@ -2,7 +2,7 @@ using System;
 
 namespace ApiPorter.Patterns
 {
-    public sealed class PatternReplacement
+    public sealed partial class PatternReplacement
     {
         private PatternReplacement(PatternSearch search, string newText)
         {

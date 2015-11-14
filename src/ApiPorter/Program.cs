@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using ApiPorter.Patterns;
 
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.MSBuild;
 using Microsoft.CodeAnalysis.Text;
@@ -55,6 +56,12 @@ namespace ApiPorter
             var workspace = MSBuildWorkspace.Create();
             var solution = await workspace.OpenSolutionAsync(solutionPath);
 
+            //await RunSearch(solution);
+            await RunReplacements(solution);
+        }
+
+        private static async Task RunSearch(Solution solution)
+        {
             Console.WriteLine("Searching...");
 
             var searches = CreateSearches();
@@ -103,6 +110,26 @@ namespace ApiPorter
             }
         }
 
+        private static async Task RunReplacements(Solution solution)
+        {
+            Console.WriteLine("Replacing...");
+
+            var replacements = CreateReplacements();
+
+            var newSolution = await PatternReplacement.RunAsync(solution, replacements);
+            var changedDocuments = newSolution.GetChanges(solution)
+                                              .GetProjectChanges()
+                                              .SelectMany(p => p.GetChangedDocuments(), (p, i) => newSolution.GetDocument(i));
+
+            foreach (var document in changedDocuments)
+            {
+                var text = await document.GetTextAsync();
+                using (var stream = File.OpenWrite(document.FilePath))
+                using (var streamWriter = new StreamWriter(stream, text.Encoding))
+                    text.Write(streamWriter);
+            }
+        }
+
         private static ImmutableArray<PatternSearch> CreateSearches()
         {
             return ImmutableArray.Create(
@@ -124,6 +151,33 @@ namespace ApiPorter
                 ),
                 PatternSearch.Create("$identifier$.Text",
                     PatternVariable.Identifier("$identifier$", "query|syntaxTree", true)
+                )
+            );
+        }
+
+        private static ImmutableArray<PatternReplacement> CreateReplacements()
+        {
+            return ImmutableArray.Create(
+                PatternReplacement.Create(
+                    PatternSearch.Create("$type$.GetProperty($args$)",
+                        PatternVariable.Expression("$type$", "System.Type", false),
+                        PatternVariable.Argument("$args$")
+                    ),
+                    "$type$.GetTypeInfo().GetProperty($args$)"
+                ),
+                PatternReplacement.Create(
+                    PatternSearch.Create("$expr1$ + $expr2$",
+                        PatternVariable.Expression("$expr1$"),
+                        PatternVariable.Expression("$expr2$")
+                    ),
+                    "$expr1$ * $expr2$"
+                ),
+                PatternReplacement.Create(
+                    PatternSearch.Create("new $id$($args$)",
+                        PatternVariable.Identifier("$id$"),
+                        PatternVariable.Argument("$args$", 2, 2)
+                    ),
+                    "new $id$(1, 2, $args$, \"test\")"
                 )
             );
         }
