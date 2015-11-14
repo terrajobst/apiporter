@@ -3,8 +3,15 @@ using System.Text.RegularExpressions;
 
 namespace ApiPorter.Patterns
 {
-    // Statement (optional limit n...m statements)
-    // MemberAccess
+    // TODO: new $type$<BoundExpression>()
+    //
+    // The type variable should match identifier in the generic name.
+    // Of course, we still need to create matchers for generic name.
+    // That's interesting because ArgumentVariable should be matched
+    // for generic arguments.
+    //
+    // TODO: Statement (optional limit n...m statements)
+    // TODO: MemberAccess
 
     partial class PatternVariable
     {
