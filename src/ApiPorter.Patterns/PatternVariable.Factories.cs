@@ -52,7 +52,7 @@ namespace ApiPorter.Patterns
             if (minOccurrences < 0)
                 throw new ArgumentOutOfRangeException(nameof(minOccurrences));
 
-            if (maxOccurrences <= 0)
+            if (maxOccurrences < 0)
                 throw new ArgumentOutOfRangeException(nameof(maxOccurrences));
 
             return new ArgumentVariable(name, minOccurrences, maxOccurrences);

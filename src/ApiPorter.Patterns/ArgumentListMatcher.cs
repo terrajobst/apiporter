@@ -21,6 +21,9 @@ namespace ApiPorter.Patterns
                 return Match.NoMatch;
 
             var argumentList = (ArgumentListSyntax) nodeOrToken.AsNode();
+            if (_variable.MinOccurrences > argumentList.Arguments.Count)
+                return Match.NoMatch;
+
             if (_variable.MaxOccurrences != null && _variable.MaxOccurrences < argumentList.Arguments.Count)
                 return Match.NoMatch;
 
