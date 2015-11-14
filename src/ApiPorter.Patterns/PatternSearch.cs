@@ -16,7 +16,7 @@ namespace ApiPorter.Patterns
             if (text == null)
                 throw new ArgumentNullException(nameof(text));
 
-            return new PatternSearch(text, variables.ToImmutableArray());
+            return new PatternSearch(text, variables);
         }
 
         public static PatternSearch Create(string text, params PatternVariable[] variables)
